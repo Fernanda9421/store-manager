@@ -24,16 +24,29 @@ const countRepeatedNames = async ({ name }) => {
 
 const createProduct = async ({ name, quantity }) => {
   const query = 'INSERT INTO StoreManager.products (name, quantity) VALUES (?, ?);';
-  const [retorno] = await countRepeatedNames({ name });
-  if (Object.values(retorno[0])[0] !== 0) {
+  const [value] = await countRepeatedNames({ name });
+  if (Object.values(value[0])[0] !== 0) {
     return null;
   }
   const [product] = await connection.execute(query, [name, quantity]);
   return product;
 };
 
+const updateProduct = async ({ id, name, quantity }) => {
+  const query = 'UPDATE StoreManager.products SET name = ?, quantity = ? WHERE id = ?;';
+  const [{ affectedRows }] = await connection.execute(query, [name, quantity, id]);
+
+  if (affectedRows === 0) return null;
+  return {
+    id,
+    name,
+    quantity,
+  };
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
   createProduct,
+  updateProduct,
 };

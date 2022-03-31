@@ -8,5 +8,6 @@ const productValidation = require('../middlewares/productValidationsMiddleware')
 router.get('/', productsController.getAllProducts);
 router.get('/:id', productsController.getProductById);
 router.post('/', productValidation, productsController.createProduct);
+router.put('/:id', productValidation, productsController.updateProduct);
 
 module.exports = router;
