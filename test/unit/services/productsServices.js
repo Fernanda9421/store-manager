@@ -155,3 +155,57 @@ describe('createProduct', () => {
     });
   });
 });
+
+describe('updateProduct', () => {
+  describe('Dado que o produto existe no Banco de Dados', () => {
+    const payload = {
+      id: 4,
+      name: "Janela preta",
+      quantity: 8
+    };
+
+    before(() => {
+      const result = [payload];
+      sinon.stub(ProductsModel, 'updateProduct').resolves(result);
+    });
+    after(() => {
+      ProductsModel.updateProduct.restore();
+    });
+
+    describe('quando é atualizado com sucesso', () => {
+      it('retorna um array', async () => {
+        const response = await ProductsService.updateProduct(payload);
+        expect(response).to.be.an('array');
+      });
+    });
+  });
+
+  describe('Dado que o produto não existe no Banco de Dados', () => {
+    const payload = {
+      id: 25,
+      name: "",
+      quantity: 0
+    };
+
+    before(() => {
+      const execute = null;
+      sinon.stub(ProductsModel, 'updateProduct').resolves(execute);
+    });
+
+    after(() => {
+      ProductsModel.updateProduct.restore();
+    });
+
+    describe('quando não é atualizado com sucesso', () => {
+      it('retorna notFound', async () => {
+        const response = await ProductsService.updateProduct(payload);
+        expect(response.error.code).to.be.equal('notFound');
+      });
+
+      it('retorna mensagem de erro correta', async () => {
+        const response = await ProductsService.updateProduct(payload);
+        expect(response.error.message).to.be.equal('Product not found');
+      });
+    });
+  });
+});

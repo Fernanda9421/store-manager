@@ -202,3 +202,51 @@ describe('createProduct', () => {
     });
   });
 });
+
+describe('updateProduct', () => {
+  describe('Dado que o produto existe no Banco de Dados', () => {
+    const payload = {
+      id: 4,
+      name: "Janela preta",
+      quantity: 8
+    };
+
+    before(() => {
+      const result = [[payload]];
+      sinon.stub(connection, 'execute').resolves(result);
+    });
+    after(() => {
+      connection.execute.restore();
+    });
+
+    describe('quando é atualizado com sucesso', () => {
+      it('retorna um objeto', async () => {
+        const response = await ProductsModel.updateProduct(payload);
+        expect(response).to.be.an('object');
+      });
+    });
+  });
+
+  describe('Dado que o produto não existe no Banco de Dados', () => {
+    const payload = {
+      id: 25,
+      name: "",
+      quantity: 0
+    };
+
+    before(() => {
+      const result = [{ affectedRows: 0 }];
+      sinon.stub(connection, 'execute').resolves(result);
+    });
+    after(() => {
+      connection.execute.restore();
+    });
+
+    describe('quando não é atualizado com sucesso', () => {
+      it('retorna null', async () => {
+        const response = await ProductsModel.updateProduct(payload);
+        expect(response).to.be.equal(null);
+      });
+    });
+  });
+});
