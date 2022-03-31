@@ -200,8 +200,6 @@ describe('updateProduct', () => {
 
     it('retorna um objeto com o produto', async () => {
       await ProductsController.updateProduct(request, response);
-
-      console.log(sinon.match.object);
       expect(response.json.calledWith(sinon.match.object)).to.be.equal(true);
     });
   });
@@ -223,6 +221,57 @@ describe('updateProduct', () => {
 
     it('chama a função next', async () => {
       await ProductsController.updateProduct(request, response, next);
+      expect(next.calledOnce).to.be.equal(true);
+    });
+  });
+});
+
+describe('deleteProduct', () => {
+  describe('Dado que o id é válido', () => {
+    const response = {};
+    const request = {};
+
+    before(() => {
+      request.params = { id: 1 }
+
+      const payload = 1;
+
+      response.status = sinon.stub().returns(response);
+      response.json = sinon.stub().returns(response);
+      response.end = sinon.stub().returns();
+
+      sinon.stub(ProductsService, 'deleteProduct').resolves(payload);
+    });
+
+    after(() => {
+      ProductsService.deleteProduct.restore();
+    });
+
+    it('retorna status 204', async () => {
+      await ProductsController.deleteProduct(request, response);
+
+      expect(response.status.calledWith(204)).to.be.equal(true);
+    });
+  });
+
+  describe('Dado que o id é inválido', () => {
+    const response = {};
+    const request = {};
+    const next = sinon.spy();
+
+    before(() => {
+      response.status = sinon.stub().returns(response);
+      response.json = sinon.stub().returns(response)
+      response.end = sinon.stub().returns();
+
+      sinon.stub(ProductsService, 'deleteProduct').throwsException();
+    });
+    after(() => {
+      ProductsService.deleteProduct.restore();
+    });
+
+    it('chama a função next', async () => {
+      await ProductsController.deleteProduct(request, response, next);
       expect(next.calledOnce).to.be.equal(true);
     });
   });

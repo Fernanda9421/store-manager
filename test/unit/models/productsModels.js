@@ -250,3 +250,43 @@ describe('updateProduct', () => {
     });
   });
 });
+
+describe('deleteProduct', () => {
+  describe('Dado que o produto existe no Banco de Dados', () => {
+    const payload = { affectedRows: 1 };
+
+    before(() => {
+      const result = [payload];
+      sinon.stub(connection, 'execute').resolves(result);
+    });
+    after(() => {
+      connection.execute.restore();
+    });
+
+    describe('quando é excluído com sucesso', () => {
+      it('retorna o número 1', async () => {
+        const response = await ProductsModel.deleteProduct(payload);
+        expect(response).to.be.an('number').to.equal(1);
+      });
+    });
+  });
+
+  describe('Dado que o produto não existe no Banco de Dados', () => {
+    const payload = { affectedRows: 0 };
+
+    before(() => {
+      const result = [payload];
+      sinon.stub(connection, 'execute').resolves(result);
+    });
+    after(() => {
+      connection.execute.restore();
+    });
+
+    describe('quando não é excluído com sucesso', () => {
+      it('retorna o número 0', async () => {
+        const response = await ProductsModel.deleteProduct(payload);
+        expect(response).to.be.an('number').to.equals(0);
+      });
+    });
+  });
+});

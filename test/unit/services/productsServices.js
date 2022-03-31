@@ -209,3 +209,48 @@ describe('updateProduct', () => {
     });
   });
 });
+
+describe('deleteProducts', () => {
+  describe('Dado que o produto existe no Banco de Dados', () => {
+    const payload = 1;
+
+    before(() => {
+      sinon.stub(ProductsModel, 'deleteProduct').resolves(payload);
+    });
+    after(() => {
+      ProductsModel.deleteProduct.restore();
+    });
+
+    describe('quando é deletado com sucesso', () => {
+      it('retorna o número 1', async () => {
+        const response = await ProductsService.deleteProduct(payload);
+        expect(response).to.be.a('number').to.equal(1);
+      });
+    });
+  });
+
+  describe('Dado que o produto não existe no Banco de Dados', () => {
+    const payload = 0;
+
+    before(() => {
+      sinon.stub(ProductsModel, 'deleteProduct').resolves(payload);
+    });
+
+    after(() => {
+      ProductsModel.deleteProduct.restore();
+    });
+
+    describe('quando não é deletado com sucesso', () => {
+      it('retorna notFound', async () => {
+        const response = await ProductsService.deleteProduct(payload);
+        console.log(response);
+        expect(response.error.code).to.be.equal('notFound');
+      });
+
+      it('retorna mensagem de erro correta', async () => {
+        const response = await ProductsService.deleteProduct(payload);
+        expect(response.error.message).to.be.equal('Product not found');
+      });
+    });
+  });
+});
