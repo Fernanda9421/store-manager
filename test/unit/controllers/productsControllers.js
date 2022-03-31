@@ -41,10 +41,12 @@ describe('getAllProducts', () => {
     // const next = {};
 
     before(() => {
-      const payload = { error: {
-        code: 'notFound',
-        message: 'Product not found',
-      } };
+      const payload = {
+        error: {
+          code: 'notFound',
+          message: 'Product not found',
+        }
+      };
       response.status = sinon.stub().returns(response);
       response.json = sinon.stub().returns(response);
       // next = sinon.stub().returns();
@@ -90,3 +92,38 @@ describe('getProductById', () => {
     });
   });
 });
+
+describe('createProduct', () => {
+  describe('Dado que o payload é válido', () => {
+    const response = {};
+    const request = {};
+
+    before(() => {
+      request.body = {
+        name: "Porta de metal",
+        quantity: 3
+      };
+
+      response.status = sinon.stub().returns(response);
+      response.json = sinon.stub().returns();
+
+      sinon.stub(ProductsService, 'createProduct').resolves(true);
+    });
+
+    after(() => {
+      ProductsService.createProduct.restore();
+    });
+
+    it('retorna status 201', async () => {
+      await ProductsController.createProduct(request, response);
+
+      expect(response.status.calledWith(201)).to.be.equal(true);
+    });
+
+    it('retorna um objeto com o produto', async () => {
+      await ProductsController.createProduct(request, response);
+
+      expect(response.json.calledWith(sinon.match.object)).to.be.equal(true);
+    });
+  });
+})

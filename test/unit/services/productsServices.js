@@ -94,3 +94,64 @@ describe('getProductById', () => {
     });
   });
 });
+
+describe('createProduct', () => {
+  describe('Dado que o produto não existe no Banco de Dados', () => {
+    const payload = {
+      fieldCount: 0,
+      affectedRows: 1,
+      insertId: 9,
+      info: '',
+      serverStatus: 2,
+      warningStatus: 0
+    };
+
+    before(() => {
+      const result = [payload];
+      sinon.stub(ProductsModel, 'createProduct').resolves(result);
+    });
+    after(() => {
+      ProductsModel.createProduct.restore();
+    });
+
+    describe('quando é inserido com sucesso', () => {
+      it('retorna um array', async () => {
+        const response = await ProductsService.createProduct(payload);
+        expect(response).to.be.an('array');
+      });
+
+      it('o objeto possui a propriedade insertId', async () => {
+        const response = await ProductsService.createProduct(payload);
+        expect(response[0]).to.have.a.property('insertId');
+      });
+    });
+  });
+
+  describe('Dado que o produto já existe no Banco de Dados', () => {
+    const payload = {
+      name: '',
+      quantity: 0,
+    };
+
+    before(() => {
+      const execute = null;
+      sinon.stub(ProductsModel, 'createProduct').resolves(execute);
+    });
+
+    after(() => {
+      ProductsModel.createProduct.restore();
+    });
+
+    describe('quando não é inserido com sucesso', () => {
+      it('retorna notFound', async () => {
+        const response = await ProductsService.createProduct(payload);
+        expect(response.error.code).to.be.equal('alreadyExists');
+      });
+
+      it('retorna mensagem de erro correta', async () => {
+        const response = await ProductsService.createProduct(payload);
+        expect(response.error.message).to.be.equal('Product already exists');
+      });
+    });
+  });
+});
