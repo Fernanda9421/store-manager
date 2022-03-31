@@ -19,7 +19,22 @@ const getProductById = async (id) => {
   return product;
 };
 
+const createProduct = async (product) => {
+  const newProduct = await productsModel.createProduct(product);
+  if (!newProduct) {
+    return {
+      error: {
+        code: 'alreadyExists',
+        message: 'Product already exists',
+      },
+    };
+  }
+
+  return newProduct;
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
+  createProduct,
 };
