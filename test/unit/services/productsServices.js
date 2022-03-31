@@ -3,7 +3,6 @@ const { expect } = require('chai');
 
 const ProductsService = require('../../../services/productsService');
 const ProductsModel = require('../../../models/productsModel');
-const { object } = require('joi');
 
 describe('getAllProducts', () => {
   describe('Dado que existem produtos no Banco de Dados', () => {
@@ -26,7 +25,7 @@ describe('getAllProducts', () => {
       });
 
       it('o objeto contém as propriedades corretas', async () => {
-        const response = await ProductsModel.getAllProducts();
+        const response = await ProductsService.getAllProducts();
         expect(response[0]).to.have.keys('id', 'name', 'quantity');
       });
     });
@@ -44,7 +43,6 @@ describe('getAllProducts', () => {
     describe('quando é retornado com sucesso', () => {
       it('retorna null', async () => {
         const response = await ProductsService.getAllProducts();
-        console.log('resp', response);
         expect(response).to.be.equal(null);
       });
     });
@@ -70,7 +68,7 @@ describe('getProductById', () => {
       });
 
       it('o objeto contém as propriedades corretas', async () => {
-        const response = await ProductsModel.getProductById(FAKE_ID);
+        const response = await ProductsService.getProductById(FAKE_ID);
         expect(response).to.have.keys('id', 'name', 'quantity');
       });
     });
