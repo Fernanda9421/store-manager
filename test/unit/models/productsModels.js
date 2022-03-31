@@ -1,5 +1,5 @@
 const sinon = require('sinon');
-const { exect, expect } = require('chai');
+const { expect } = require('chai');
 
 const connection = require('../../../models/connection');
 const ProductsModel = require('../../../models/productsModel');
@@ -53,9 +53,9 @@ describe('getProductById', () => {
   describe('Dado que o produto existe no Banco de dados', () => {
     const FAKE_ID = 1;
     const payload = {
-      "id": 1,
-      "name": "produto A",
-      "quantity": 10
+      id: 1,
+      name: "produto A",
+      quantity: 10
     };
     before(() => {
       const result = [[payload]];
