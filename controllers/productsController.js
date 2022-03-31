@@ -49,9 +49,23 @@ const updateProduct = async (req, res, next) => {
   }
 };
 
+const deleteProduct = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const deletedProduct = await productsService.deleteProduct(id);
+    if (deletedProduct.error) return next(deletedProduct.error);
+
+    return res.status(204).json().end();
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
   createProduct,
   updateProduct,
+  deleteProduct,
 };
