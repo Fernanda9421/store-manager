@@ -19,7 +19,27 @@ const getSaleById = async (id) => {
   return sale;
 };
 
+const createSale = async (sales) => {
+  const existingIds = await salesModel.isValidProductId();
+  const addIds = await sales.map((item) => item.productId);
+
+  const includesId = addIds.every((item) => existingIds.includes(item));
+
+  if (!includesId) {
+    return {
+      error: {
+        code: 'notFound',
+        message: 'Product id not found',
+      },
+    };
+  }
+
+  const newSale = await salesModel.createSale(sales);
+  return newSale;
+};
+
 module.exports = {
   getAllSales,
   getSaleById,
+  createSale,
 };
