@@ -27,6 +27,7 @@ const isValidProductId = async () => {
   const query = 'SELECT id FROM StoreManager.products;';
   const [existingIds] = await connection.execute(query);
   const ids = existingIds.map(({ id }) => id);
+  console.log(ids);
   return ids;
 };
 
