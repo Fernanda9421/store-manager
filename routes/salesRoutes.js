@@ -17,7 +17,7 @@ router.put(
   '/:id',
   saleValidation.validateProductId,
   saleValidation.validateQuantity,
-  // salesController.updateSale,
+  salesController.updateSale,
 );
 
 module.exports = router;
