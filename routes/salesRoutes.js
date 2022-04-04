@@ -13,5 +13,11 @@ router.post(
   saleValidation.validateQuantity,
   salesController.createSale,
 );
+router.put(
+  '/:id',
+  saleValidation.validateProductId,
+  saleValidation.validateQuantity,
+  // salesController.updateSale,
+);
 
 module.exports = router;
