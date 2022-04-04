@@ -1,15 +1,25 @@
-const Joi = require('joi');
+const productSchema = require('../schemas/productSchema');
 
-const productSchema = Joi.object({
-  name: Joi.string().min(5).required(),
-  quantity: Joi.number().integer().min(1).required(),
-});
+const validateName = (req, res, next) => {
+  const { name } = req.body;
+  const validations = productSchema.validateName(name);
 
-const productValidationsMiddleware = (req, res, next) => {
-  const { error } = productSchema.validate(req.body);
-  if (error) throw error;
+  if (validations.message) {
+    return res.status(validations.code).json({ message: validations.message });
+  }
 
   next();
 };
 
-module.exports = productValidationsMiddleware;
+const validateQuantity = (req, res, next) => {
+  const { quantity } = req.body;
+  const validations = productSchema.validadeQuantity(quantity);
+
+  if (validations.message) {
+    return res.status(validations.code).json({ message: validations.message });
+  }
+
+  next();
+};
+
+module.exports = { validateName, validateQuantity };
