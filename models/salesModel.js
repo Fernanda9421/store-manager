@@ -49,6 +49,14 @@ const createSale = async (salesArray) => {
   };
 };
 
+const isValidSaleId = async () => {
+  const query = 'SELECT id FROM StoreManager.sales;';
+  const [existingIds] = await connection.execute(query);
+  const ids = existingIds.map(({ id }) => id);
+
+  return ids;
+};
+
 const updateSale = async (salesArray, id) => {
   const query = `UPDATE StoreManager.sales_products SET product_id = ?, quantity = ?
   WHERE sale_id = ?;`;
@@ -76,6 +84,7 @@ module.exports = {
   getSaleById,
   isValidProductId,
   createSale,
+  isValidSaleId,
   updateSale,
   deleteSale,
 };

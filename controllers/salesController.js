@@ -41,6 +41,8 @@ const updateSale = async (req, res, next) => {
 
     const newSale = await salesService.updateSale([...updatedSale], id);
 
+    if (newSale.error) return next(newSale.error);
+
     return res.status(200).json(newSale);
   } catch (error) {
     next(error);

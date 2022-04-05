@@ -39,8 +39,20 @@ const createSale = async (sales) => {
 };
 
 const updateSale = async (sales, id) => {
-  const updatedSale = await salesModel.updateSale(sales, id);
+  const existingIds = await salesModel.isValidSaleId();
 
+  const includesId = existingIds.some((item) => id.includes(item));
+
+  if (!includesId) {
+    return {
+      error: {
+        code: 'notFound',
+        message: 'Sale id not found',
+      },
+    };
+  }
+
+  const updatedSale = await salesModel.updateSale(sales, id);
   return updatedSale;
 };
 
