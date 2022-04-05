@@ -198,27 +198,72 @@ describe('createSale', () => {
         expect(response).to.have.keys('id', 'itemsSold');
       });
     });
+  });
+});
 
-  // describe('Dado que o produto já existe no Banco de Dados', () => {
-  //   const payload = {
-  //     name: '',
-  //     quantity: 0,
-  //   };
+describe('isValidSaleId', () => {
+  describe('Dado que existem vendas no Banco de Dados', () => {
+    const payload = [ 1, 2 ];
 
-  //   before(() => {
-  //     const execute = [[payload]];
-  //     sinon.stub(connection, 'execute').resolves(execute);
-  //   });
+    before(() => {
+      const result = [payload];
+      sinon.stub(connection, 'execute').resolves(result);
+    });
+    after(() => {
+      connection.execute.restore();
+    });
 
-  //   after(() => {
-  //     connection.execute.restore();
-  //   });
+    describe('e são um total de 2 vendas', () => {
+      it('retorna um array', async () => {
+        const response = await SalesModel.isValidSaleId();
+        expect(response).to.be.an('array');
+      });
 
-  //   describe('quando não é inserido com sucesso', () => {
-  //     it('retorna null', async () => {
-  //       const response = await ProductsModel.createProduct(payload);
-  //       expect(response).to.be.equal(null);
-  //     });
-  //   });
+      it('o array possui 2 posições', async () => {
+        const response = await SalesModel.isValidSaleId();
+        expect(response).to.be.length(2);
+      });
+    });
+  });
+});
+
+describe('updateSale', () => {
+  describe('Dado que a venda existe no Banco de Dados', () => {
+    const parameter = [
+      {
+        productId: 1,
+        quantity: 6
+      }
+    ];
+
+    const payload = {
+      saleId: 1,
+      itemUpdated: [
+        {
+          productId: 1,
+          quantity: 6
+        }
+      ]
+    };
+
+    before(() => {
+      const result = [[payload]];
+      sinon.stub(connection, 'execute').resolves(result);
+    });
+    after(() => {
+      connection.execute.restore();
+    });
+
+    describe('quando é atualizado com sucesso', () => {
+      it('retorna um objeto', async () => {
+        const response = await SalesModel.updateSale(parameter);
+        expect(response).to.be.an('object');
+      });
+
+      it('o objeto possui as propriedades "saleId" e "itemUpdated"', async () => {
+        const response = await SalesModel.updateSale(parameter);
+        expect(response).to.have.keys('saleId', 'itemUpdated');
+      });
+    });
   });
 });

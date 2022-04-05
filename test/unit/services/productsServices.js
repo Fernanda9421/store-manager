@@ -243,7 +243,6 @@ describe('deleteProducts', () => {
     describe('quando não é deletado com sucesso', () => {
       it('retorna notFound', async () => {
         const response = await ProductsService.deleteProduct(payload);
-        console.log(response);
         expect(response.error.code).to.be.equal('notFound');
       });
 
