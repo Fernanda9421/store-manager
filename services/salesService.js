@@ -24,11 +24,8 @@ const getSaleById = async (id) => {
 const createSale = async (sales) => {
   const existingIds = await productsModel.isValidProductId();
   const addIds = await sales.map((item) => item.productId);
-  console.log(existingIds, 'existing');
-  console.log(addIds, 'add');
 
   const includesId = addIds.every((item) => existingIds.includes(item));
-  console.log(includesId, 'includes');
 
   if (!includesId) {
     return {
@@ -40,14 +37,14 @@ const createSale = async (sales) => {
   }
 
   const newSale = await salesProductsModel.createSale(sales);
-  console.log(newSale);
+
   return newSale;
 };
 
 const updateSale = async (sales, id) => {
   const existingIds = await salesModel.isValidSaleId();
 
-  const includesId = existingIds.some((item) => id.includes(item));
+  const includesId = existingIds.includes(Number(id));
 
   if (!includesId) {
     return {
