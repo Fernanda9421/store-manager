@@ -290,3 +290,29 @@ describe('deleteProduct', () => {
     });
   });
 });
+
+describe('isValidProductId', () => {
+  describe('Dado que existem produtos no Banco de Dados', () => {
+    const payload = [1, 2, 3];
+
+    before(() => {
+      const result = [payload];
+      sinon.stub(connection, 'execute').resolves(result);
+    });
+    after(() => {
+      connection.execute.restore();
+    });
+
+    describe('e são um total de 3 produtos', () => {
+      it('retorna um array', async () => {
+        const response = await ProductsModel.isValidProductId();
+        expect(response).to.be.an('array');
+      });
+
+      it('o array possui 3 posições', async () => {
+        const response = await ProductsModel.isValidProductId();
+        expect(response).to.be.length(3);
+      });
+    });
+  });
+});
