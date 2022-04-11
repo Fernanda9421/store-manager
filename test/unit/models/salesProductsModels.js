@@ -2,6 +2,7 @@ const sinon = require('sinon');
 const { expect } = require('chai');
 
 const connection = require('../../../models/connection');
+const SalesProductModel = require('../../../models/salesProductsModel');
 const SalesModel = require('../../../models/salesModel');
 
 describe('getAllSales', () => {
@@ -29,12 +30,12 @@ describe('getAllSales', () => {
 
     describe('quando é retornado com sucesso', () => {
       it('retorna um array com 2 posições', async () => {
-        const response = await SalesModel.getAllSales();
+        const response = await SalesProductModel.getAllSales();
         expect(response).to.have.length(2);
       });
 
       it('o objeto contém as propriedades corretas', async () => {
-        const response = await SalesModel.getAllSales();
+        const response = await SalesProductModel.getAllSales();
         expect(response[0]).to.have.keys('saleId', 'date', 'productId', 'quantity');
       });
     });
@@ -51,7 +52,7 @@ describe('getAllSales', () => {
 
     describe('quando é retornado com sucesso', () => {
       it('retorna null', async () => {
-        const response = await SalesModel.getAllSales();
+        const response = await SalesProductModel.getAllSales();
         expect(response).to.be.equal(null);
       });
     });
@@ -82,13 +83,13 @@ describe('getSaleById', () => {
 
     describe('quando existem 2 vendas com o mesmo id', () => {
       it('retorna um array com 2 posições', async () => {
-        const response = await SalesModel.getSaleById(FAKE_ID);
+        const response = await SalesProductModel.getSaleById(FAKE_ID);
         expect(response).to.be.a('array');
         expect(response).to.have.length(2);
       });
 
       it('o objeto contém as propriedades corretas', async () => {
-        const response = await SalesModel.getSaleById(FAKE_ID);
+        const response = await SalesProductModel.getSaleById(FAKE_ID);
         expect(response[0]).to.have.keys('date', 'productId', 'quantity');
       });
     });
@@ -97,10 +98,10 @@ describe('getSaleById', () => {
   describe('Dado que a venda existe no Banco de Dados', () => {
     const FAKE_ID = 2;
     const payload = {
-        "date": "2021-09-09T04:54:29.000Z",
-        "productId": 1,
-        "quantity": 2
-      };
+      "date": "2021-09-09T04:54:29.000Z",
+      "productId": 1,
+      "quantity": 2
+    };
     before(() => {
       const result = [[payload]]
       sinon.stub(connection, 'execute').resolves(result);
@@ -111,13 +112,13 @@ describe('getSaleById', () => {
 
     describe('quando existe 1 venda com o id', () => {
       it('retorna um array com 1 posição', async () => {
-        const response = await SalesModel.getSaleById(FAKE_ID);
+        const response = await SalesProductModel.getSaleById(FAKE_ID);
         expect(response).to.be.a('array');
         expect(response).to.have.length(1);
       });
 
       it('o objeto contém as propriedades corretas', async () => {
-        const response = await SalesModel.getSaleById(FAKE_ID);
+        const response = await SalesProductModel.getSaleById(FAKE_ID);
         expect(response[0]).to.have.keys('date', 'productId', 'quantity');
       });
     });
@@ -133,55 +134,35 @@ describe('getSaleById', () => {
     });
 
     it('retorna null', async () => {
-      const response = await SalesModel.getSaleById(5);
+      const response = await SalesProductModel.getSaleById(5);
       expect(response).to.be.equal(null);
-    });
-  });
-});
-
-describe('isValidProductId', () => {
-  describe('Dado que existem produtos no Banco de Dados', () => {
-    const payload = [ 1, 2, 3 ];
-
-    before(() => {
-      const result = [payload];
-      sinon.stub(connection, 'execute').resolves(result);
-    });
-    after(() => {
-      connection.execute.restore();
-    });
-
-    describe('e são um total de 3 produtos', () => {
-      it('retorna um array', async () => {
-        const response = await SalesModel.isValidProductId();
-        expect(response).to.be.an('array');
-      });
-
-      it('o array possui 3 posições', async () => {
-        const response = await SalesModel.isValidProductId();
-        expect(response).to.be.length(3);
-      });
     });
   });
 });
 
 describe('createSale', () => {
   describe('Dado que a venda não existe no Banco de Dados', () => {
-    const payloadArray = [
+    const parameter =   [
       {
-        "productId": 1,
-        "quantity": 3
+        productId: 1,
+        quantity: 3
       }
     ];
 
     const payload = {
-      id: 4,
-      itemsSold: [ { productId: 1, quantity: 3 } ]
-    };
+      id: 1,
+      itemsSold: [
+        {
+          productId: 1,
+          quantity: 3
+        }
+      ]
+    }
 
     before(() => {
-      const result = [[payload]];
-      sinon.stub(connection, 'execute').resolves(result);
+      const execute = [[payload]];
+      sinon.stub(connection, 'execute').resolves(execute);
+      sinon.stub(SalesModel, 'insertSale').resolves(1);
     });
     after(() => {
       connection.execute.restore();
@@ -189,39 +170,8 @@ describe('createSale', () => {
 
     describe('quando é inserido com sucesso', () => {
       it('retorna um objeto', async () => {
-        const response = await SalesModel.createSale(payloadArray);
+        const response = await SalesProductModel.createSale(parameter);
         expect(response).to.be.an('object');
-      });
-
-      it('o objeto possui as propriedades "id" e "itemsSold"', async () => {
-        const response = await SalesModel.createSale(payloadArray);
-        expect(response).to.have.keys('id', 'itemsSold');
-      });
-    });
-  });
-});
-
-describe('isValidSaleId', () => {
-  describe('Dado que existem vendas no Banco de Dados', () => {
-    const payload = [ 1, 2 ];
-
-    before(() => {
-      const result = [payload];
-      sinon.stub(connection, 'execute').resolves(result);
-    });
-    after(() => {
-      connection.execute.restore();
-    });
-
-    describe('e são um total de 2 vendas', () => {
-      it('retorna um array', async () => {
-        const response = await SalesModel.isValidSaleId();
-        expect(response).to.be.an('array');
-      });
-
-      it('o array possui 2 posições', async () => {
-        const response = await SalesModel.isValidSaleId();
-        expect(response).to.be.length(2);
       });
     });
   });
@@ -256,53 +206,13 @@ describe('updateSale', () => {
 
     describe('quando é atualizado com sucesso', () => {
       it('retorna um objeto', async () => {
-        const response = await SalesModel.updateSale(parameter);
+        const response = await SalesProductModel.updateSale(parameter);
         expect(response).to.be.an('object');
       });
 
       it('o objeto possui as propriedades "saleId" e "itemUpdated"', async () => {
-        const response = await SalesModel.updateSale(parameter);
+        const response = await SalesProductModel.updateSale(parameter);
         expect(response).to.have.keys('saleId', 'itemUpdated');
-      });
-    });
-  });
-});
-
-describe('deleteSale', () => {
-  describe('Dado que a venda existe no Banco de Dados', () => {
-    const payload = { affectedRows: 1 };
-
-    before(() => {
-      const result = [payload];
-      sinon.stub(connection, 'execute').resolves(result);
-    });
-    after(() => {
-      connection.execute.restore();
-    });
-
-    describe('quando é excluído com sucesso', () => {
-      it('retorna o número 1', async () => {
-        const response = await SalesModel.deleteSale(payload);
-        expect(response).to.be.an('number').to.equal(1);
-      });
-    });
-  });
-
-  describe('Dado que a venda não existe no Banco de Dados', () => {
-    const payload = { affectedRows: 0 };
-
-    before(() => {
-      const result = [payload];
-      sinon.stub(connection, 'execute').resolves(result);
-    });
-    after(() => {
-      connection.execute.restore();
-    });
-
-    describe('quando não é excluído com sucesso', () => {
-      it('retorna o número 0', async () => {
-        const response = await SalesModel.deleteSale(payload);
-        expect(response).to.be.an('number').to.equals(0);
       });
     });
   });
