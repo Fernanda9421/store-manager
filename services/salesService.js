@@ -1,12 +1,14 @@
+const salesProductsModel = require('../models/salesProductsModel');
+const productsModel = require('../models/productsModel');
 const salesModel = require('../models/salesModel');
 
 const getAllSales = async () => {
-  const sales = await salesModel.getAllSales();
+  const sales = await salesProductsModel.getAllSales();
   return sales;
 };
 
 const getSaleById = async (id) => {
-  const sale = await salesModel.getSaleById(id);
+  const sale = await salesProductsModel.getSaleById(id);
   if (!sale) {
     return {
       error: {
@@ -20,10 +22,13 @@ const getSaleById = async (id) => {
 };
 
 const createSale = async (sales) => {
-  const existingIds = await salesModel.isValidProductId();
+  const existingIds = await productsModel.isValidProductId();
   const addIds = await sales.map((item) => item.productId);
+  console.log(existingIds, 'existing');
+  console.log(addIds, 'add');
 
   const includesId = addIds.every((item) => existingIds.includes(item));
+  console.log(includesId, 'includes');
 
   if (!includesId) {
     return {
@@ -34,7 +39,8 @@ const createSale = async (sales) => {
     };
   }
 
-  const newSale = await salesModel.createSale(sales);
+  const newSale = await salesProductsModel.createSale(sales);
+  console.log(newSale);
   return newSale;
 };
 
@@ -52,7 +58,7 @@ const updateSale = async (sales, id) => {
     };
   }
 
-  const updatedSale = await salesModel.updateSale(sales, id);
+  const updatedSale = await salesProductsModel.updateSale(sales, id);
   return updatedSale;
 };
 

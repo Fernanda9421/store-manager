@@ -51,6 +51,14 @@ const deleteProduct = async (id) => {
   return affectedRows;
 };
 
+const isValidProductId = async () => {
+  const query = 'SELECT id FROM StoreManager.products;';
+  const [existingIds] = await connection.execute(query);
+  const ids = existingIds.map(({ id }) => id);
+
+  return ids;
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
@@ -58,4 +66,5 @@ module.exports = {
   createProduct,
   updateProduct,
   deleteProduct,
+  isValidProductId,
 };
